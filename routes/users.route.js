@@ -119,6 +119,51 @@ router.patch("/update/:id",(req,res)=>{
     }
 });
 
+
+router.patch("/bulk-update",(req,res)=>{
+  const reqData = req.body;
+
+  //reading previous data
+  fs.readFile("./users.json", async (err, data) => {
+    if (err) console.log(err);
+    const previousUsers = await JSON.parse(data);
+  
+  for(const itemData of reqData){
+   const userID = itemData.id; 
+   console.log(userID);
+
+    if(userID){
+     
+          const previousData =  previousUsers.find(user => user.id == userID);
+          const dataIndex = previousUsers.indexOf(previousData);
+
+          if(previousData){
+            for(const item in itemData){
+              if(item !== "id"){
+                previousData[item] = itemData[item];
+              }
+            }
+            // console.log(previousData);
+            previousUsers[dataIndex] = previousData;
+          
+          }
+        
+  }
+  }
+
+  const finalData = JSON.stringify(previousUsers);
+  // console.log(finalData);
+  fs.writeFile("./users.json", finalData, (err) => {
+    if (err) {
+      res.send("Something went wrong");
+    } else {
+      res.send("Your desired data is updated");
+    }
+  });
+
+});
+})
+
 router.delete("/delete/:id",(req,res)=>{
   console.log("delettt")
   fs.readFile("./users.json", async (err, data) => {
