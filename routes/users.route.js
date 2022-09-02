@@ -19,7 +19,8 @@ router.get("/random", (req, res) => {
       const user = randomIndex(0, initialData.length - 1);
       res.send(initialData[user]);
     }
-  });6
+  });
+  6;
 });
 
 router.get("/all", (req, res) => {
@@ -81,100 +82,92 @@ router.post("/save", async (req, res) => {
   }
 });
 
+router.patch("/update/:id", (req, res) => {
+  const userID = req.params.id;
+  const reqData = req.body;
+  const newData = Object.keys(reqData);
+  console.log(newData);
 
-router.patch("/update/:id",(req,res)=>{
-    const userID = req.params.id;
-    const reqData = req.body;
-    const newData = Object.keys(reqData);
-    console.log(newData);
+  if (userID) {
+    fs.readFile("./users.json", async (err, data) => {
+      if (err) console.log(err);
+      const previousUsers = await JSON.parse(data);
+      console.log(previousUsers);
+      const previousData = previousUsers.find((user) => user.id == userID);
+      const dataIndex = previousUsers.indexOf(previousData);
 
-
-    if(userID){
-        fs.readFile("./users.json", async (err, data) => {
-            if (err) console.log(err);
-            const previousUsers = await JSON.parse(data);
-            console.log(previousUsers);
-            const previousData =  previousUsers.find(user => user.id == userID);
-            const dataIndex = previousUsers.indexOf(previousData);
-
-            if(previousData){
-              for(const item in reqData){
-                if(item !== "id"){
-                  previousData[item] = reqData[item];
-                }
-              }
-              console.log(previousData);
-              previousUsers[dataIndex] = previousData;
-              const finalData = JSON.stringify(previousUsers);
-              console.log(finalData);
-              fs.writeFile("./users.json", finalData, (err) => {
-                if (err) {
-                  res.send("Something went wrong");
-                } else {
-                  res.send("User Updated");
-                }
-              });
-            }
-          });
-    }
+      if (previousData) {
+        for (const item in reqData) {
+          if (item !== "id") {
+            previousData[item] = reqData[item];
+          }
+        }
+        console.log(previousData);
+        previousUsers[dataIndex] = previousData;
+        const finalData = JSON.stringify(previousUsers);
+        console.log(finalData);
+        fs.writeFile("./users.json", finalData, (err) => {
+          if (err) {
+            res.send("Something went wrong");
+          } else {
+            res.send("User Updated");
+          }
+        });
+      }
+    });
+  }
 });
 
-
-router.patch("/bulk-update",(req,res)=>{
+router.patch("/bulk-update", (req, res) => {
   const reqData = req.body;
 
   //reading previous data
   fs.readFile("./users.json", async (err, data) => {
     if (err) console.log(err);
     const previousUsers = await JSON.parse(data);
-  
-  for(const itemData of reqData){
-   const userID = itemData.id; 
-   console.log(userID);
 
-    if(userID){
-     
-          const previousData =  previousUsers.find(user => user.id == userID);
-          const dataIndex = previousUsers.indexOf(previousData);
+    for (const itemData of reqData) {
+      const userID = itemData.id;
+      console.log(userID);
 
-          if(previousData){
-            for(const item in itemData){
-              if(item !== "id"){
-                previousData[item] = itemData[item];
-              }
+      if (userID) {
+        const previousData = previousUsers.find((user) => user.id == userID);
+        const dataIndex = previousUsers.indexOf(previousData);
+
+        if (previousData) {
+          for (const item in itemData) {
+            if (item !== "id") {
+              previousData[item] = itemData[item];
             }
-            // console.log(previousData);
-            previousUsers[dataIndex] = previousData;
-          
           }
-        
-  }
-  }
-
-  const finalData = JSON.stringify(previousUsers);
-  // console.log(finalData);
-  fs.writeFile("./users.json", finalData, (err) => {
-    if (err) {
-      res.send("Something went wrong");
-    } else {
-      res.send("Your desired data is updated");
+          // console.log(previousData);
+          previousUsers[dataIndex] = previousData;
+        }
+      }
     }
+
+    const finalData = JSON.stringify(previousUsers);
+    // console.log(finalData);
+    fs.writeFile("./users.json", finalData, (err) => {
+      if (err) {
+        res.send("Something went wrong");
+      } else {
+        res.send("Your desired data is updated");
+      }
+    });
   });
-
 });
-})
 
-router.delete("/delete/:id",(req,res)=>{
-  console.log("delettt")
+router.delete("/delete/:id", (req, res) => {
+  console.log("delettt");
   fs.readFile("./users.json", async (err, data) => {
     if (err) console.log(err);
     const previousUsers = await JSON.parse(data);
     const userID = req.params.id;
-    if(previousUsers.find(user => user.id == userID)){
-
-      const currentData =  previousUsers.filter(user => user.id != userID);
+    if (previousUsers.find((user) => user.id == userID)) {
+      const currentData = previousUsers.filter((user) => user.id != userID);
       const finalData = JSON.stringify(currentData);
-      if(currentData){
+      if (currentData) {
         fs.writeFile("./users.json", finalData, (err) => {
           if (err) {
             res.send("Something went wrong");
@@ -182,17 +175,12 @@ router.delete("/delete/:id",(req,res)=>{
             res.send("User Deleted");
           }
         });
-  
       }
-    }
-    else{
+    } else {
       res.send("No user found to delete");
     }
     // console.log(previousUsers);
-  
-  
-
-
-})});
+  });
+});
 
 module.exports = router;
