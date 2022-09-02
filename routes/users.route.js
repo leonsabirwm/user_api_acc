@@ -117,6 +117,37 @@ router.patch("/update/:id",(req,res)=>{
             }
           });
     }
-})
+});
+
+router.delete("/delete/:id",(req,res)=>{
+  console.log("delettt")
+  fs.readFile("./users.json", async (err, data) => {
+    if (err) console.log(err);
+    const previousUsers = await JSON.parse(data);
+    const userID = req.params.id;
+    if(previousUsers.find(user => user.id == userID)){
+
+      const currentData =  previousUsers.filter(user => user.id != userID);
+      const finalData = JSON.stringify(currentData);
+      if(currentData){
+        fs.writeFile("./users.json", finalData, (err) => {
+          if (err) {
+            res.send("Something went wrong");
+          } else {
+            res.send("User Deleted");
+          }
+        });
+  
+      }
+    }
+    else{
+      res.send("No user found to delete");
+    }
+    // console.log(previousUsers);
+  
+  
+
+
+})});
 
 module.exports = router;
