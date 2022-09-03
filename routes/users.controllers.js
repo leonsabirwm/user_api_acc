@@ -14,7 +14,6 @@ const getRandomUser = (req, res) => {
           const initialData = JSON.parse(data);
           if (initialData) {
             const user = randomIndex(0, initialData.length - 1);
-           console.log("hit");
 
             res.send(initialData[user]);
           }
@@ -25,7 +24,6 @@ const getRandomUser = (req, res) => {
 
 const getAllUser = (req, res) => {
         const userCount = parseInt(req.query.s);
-        console.log(userCount);
         fs.readFile("./users.json", (err, data) => {
           if (err) console.log(err);
           const initialData = JSON.parse(data);
@@ -87,13 +85,11 @@ const patchUser = (req, res) => {
   const userID = req.params.id;
   const reqData = req.body;
   const newData = Object.keys(reqData);
-  console.log(newData);
 
   if (userID) {
     fs.readFile("./users.json", async (err, data) => {
       if (err) console.log(err);
       const previousUsers = await JSON.parse(data);
-      console.log(previousUsers);
       const previousData = previousUsers.find((user) => user.id == userID);
       const dataIndex = previousUsers.indexOf(previousData);
 
@@ -103,10 +99,8 @@ const patchUser = (req, res) => {
             previousData[item] = reqData[item];
           }
         }
-        console.log(previousData);
         previousUsers[dataIndex] = previousData;
         const finalData = JSON.stringify(previousUsers);
-        console.log(finalData);
         fs.writeFile("./users.json", finalData, (err) => {
           if (err) {
             res.send("Something went wrong");
@@ -129,7 +123,6 @@ const updateBulk = (req, res) => {
 
     for (const itemData of reqData) {
       const userID = itemData.id;
-      console.log(userID);
 
       if (userID) {
         const previousData = previousUsers.find((user) => user.id == userID);
@@ -141,14 +134,12 @@ const updateBulk = (req, res) => {
               previousData[item] = itemData[item];
             }
           }
-          // console.log(previousData);
           previousUsers[dataIndex] = previousData;
         }
       }
     }
 
     const finalData = JSON.stringify(previousUsers);
-    // console.log(finalData);
     fs.writeFile("./users.json", finalData, (err) => {
       if (err) {
         res.send("Something went wrong");
@@ -161,7 +152,6 @@ const updateBulk = (req, res) => {
 
 
 const deleteUser =  (req, res) => {
-  console.log("delettt");
   fs.readFile("./users.json", async (err, data) => {
     if (err) console.log(err);
     const previousUsers = await JSON.parse(data);
@@ -181,7 +171,6 @@ const deleteUser =  (req, res) => {
     } else {
       res.send("No user found to delete");
     }
-    // console.log(previousUsers);
   });
 };
 
